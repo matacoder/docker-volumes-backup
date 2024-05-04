@@ -1,0 +1,43 @@
+name: Backup my docker volumes workflow
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  magic_backup:
+    name: Deploy to server with remote docker-compose
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SSH key to github server (to access your host and receiver)
+        uses: kielabokkie/ssh-key-and-known-hosts-action@v1.1.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+          ssh-host: ${{ secrets.IP_HOST }}
+
+      - name: Making backup of HOST volumes
+        run: |
+          ssh root@{{ secrets.IP_HOST }}
+          tar czfv volumes.tar.gz -C /var/lib/docker/volumes .
+          exit
+
+      - name: Adding RECEIVER to known_hosts
+        run: |
+          ssh-keyscan -H {{ secrets.IP_RECEIVER }} >> ~/.ssh/known_hosts
+
+      - name: Copying backup to RECEIVER (ISPMANAGER 6 SAFE PATH)
+        run: |
+          scp root@{{ secrets.IP_HOST }}:~/volumes.tar.gz root@{{ secrets.IP_RECEIVER }}:/var/www/www-root/data/www/
+
+  send_message:
+    name: Send telegram notification
+    runs-on: ubuntu-latest
+    needs: magic_backup
+    steps:
+      - name: Send message
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: ${{ github.workflow }} done!
