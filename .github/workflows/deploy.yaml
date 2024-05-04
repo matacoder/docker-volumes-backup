@@ -1,9 +1,8 @@
 name: Backup my docker volumes workflow
 
 on:
-  push:
-    branches:
-      - master
+  schedule:
+    - cron:  '39 9 * * *'
 
 jobs:
   magic_backup:
@@ -27,6 +26,7 @@ jobs:
       - name: Copying backup to RECEIVER (ISPMANAGER 6 SAFE PATH, make sure you have one)
         run: |
           scp root@${{ secrets.IP_HOST }}:~/volumes.tar.gz root@${{ secrets.IP_RECEIVER }}:/var/www/www-root/data/www/
+          # just a memo how to unzip it: 'tar -xf volumes.tar.gz -C /var/lib/docker/volumes .'
 
   send_message:
     name: Send telegram notification
