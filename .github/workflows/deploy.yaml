@@ -18,9 +18,7 @@ jobs:
 
       - name: Making backup of HOST volumes
         run: |
-          ssh root@${{ secrets.IP_HOST }}
-          tar czfv volumes.tar.gz -C /var/lib/docker/volumes .
-          exit
+          ssh root@${{ secrets.IP_HOST }} 'tar czfv volumes.tar.gz -C /var/lib/docker/volumes .'
 
       - name: Adding RECEIVER to known_hosts
         run: |
