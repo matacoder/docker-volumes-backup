@@ -24,7 +24,7 @@ jobs:
         run: |
           ssh-keyscan -H ${{ secrets.IP_RECEIVER }} >> ~/.ssh/known_hosts
 
-      - name: Copying backup to RECEIVER (ISPMANAGER 6 SAFE PATH)
+      - name: Copying backup to RECEIVER (ISPMANAGER 6 SAFE PATH, make sure you have one)
         run: |
           scp root@${{ secrets.IP_HOST }}:~/volumes.tar.gz root@${{ secrets.IP_RECEIVER }}:/var/www/www-root/data/www/
 
