@@ -2,7 +2,7 @@ name: Backup my docker volumes workflow
 
 on:
   schedule:
-    - cron:  '39 9 * * *'
+    - cron:  '40 9 * * *'
 
 jobs:
   magic_backup:
